@@ -1,4 +1,5 @@
 # RStudio-projects
 Exploration of R &amp; RStudio
 
-* [CAPSTONE BellaBeat_HourlyDataset.pdf](https://github.com/tumassi/RStudio-projects/blob/72b8003c3c9923ccae9d1a8e82d839a09b20a0fe/BellaBeat_HourlyDataset.pdf)
+* [CAPSTONE BellaBeat_HourlyDataset.pdf](https://github.com/tumassi/RStudio-projects/blob/2056edd09f8202c9daf08b5f5737434d95fc55a2/BellaBeat_HourlyDataset.pdf)
+
