@@ -1,0 +1,247 @@
+---
+title: "Iris Dataset Exploratoratory Analysis"
+output: 
+ github_document
+date: "08/09/2025"
+---
+
+
+I will be exploring the Iris Dataset to gain a better sense of the data & to understand how the dataset is structured. From this, I will be showing my thinking process & the conclusions I have come to by combing through this dataset. My goal here is to practice the R language, answer questions as they arise from the dataset, and to make solid conclusions that accurately describe the dataset.   
+
+Step 1 - method 1
+First we install packages 
+
+```{r}
+library(dplyr)
+library(datasets)
+data(iris)
+
+
+```
+
+`Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.`
+
+Step 1 - method 2
+to fetch a dataset from local file, read it, & label that data 'iris' we do the following code.  
+```{r}
+
+install.packages("RCurl",repos = "http://cran.us.r-project.org")
+install.packages("Tinytex",repos = "http://cran.us.r-project.org")
+
+library(RCurl)
+
+
+#iris2 <- read.csv("C:/Users/file_Path)#
+```
+
+Display summary Statistics
+Here, we use head, tail, summary, checking for missing data
+
+The head command - gives you the first four rows of the dataset
+The tail command - gives you the last four rows of the data set 
+the summary command shows a breakdown of the dataset. for quantitative entries it will show the mean, min, max, median & quartile values of each column. For qualitative entries, it will show a count of occurance for each unique column field entry 
+
+```{r}
+head(iris,5)
+tail(iris,4)
+summary(iris)
+
+```
+
+
+Data validation is important, we check to see if there are missing values in our dataset.
+
+
+```{r}
+sum(is.na(iris))
+
+```
+Here we see there are no missing values in our dataset.
+
+
+Next, we will use the package skimr to view a more in-depth summary statistics of data 
+use #install.packages("skimr"), if not already installed.
+Might as well install knitr & rmarkdown to create into a pdf file.
+
+```{r}
+install.packages("knitr",repos = "http://cran.us.r-project.org")
+install.packages("rmarkdown",repos = "http://cran.us.r-project.org")
+install.packages("skimr",repos = "https://cran.r-project.org/web/packages/skimr/index.html")
+library(knitr)
+library(rmarkdown)
+library(skimr)
+skim(iris)
+```
+
+We see that a tibble is created with 1 output & 2 different statistics for each column. We see the dataset as a total of 150 rows with 5 columns. We see that 4 of those columns has numeric or quantitative entries. One of the columns has a factor or qualitative entries. 
+
+Additionally, we see one dataframe analysizes the species column, it counts the missing values. For our dataset, there are no missing entries & we see that this dataset is complete using the complete_rate column being 1. Meaning there are 100 out of 100 entries. There are 3 unique entries in the Species column being Setosa, Versicolor, Virginica with 50 entry counts for each unique Species. 
+
+The third dataframe shows us the statistical breakdown of 4 qualitative columns - "Sepal.Length" "Sepal.Width"  "Petal.Length" & "Petal.Width". We see the mean, standard deviation & percentiles for each column.
+
+
+Now we want to group by Species then perform the skim function to see what more information we can glean by focusing our lens to view species specific differences. 
+
+
+```{r}
+library(dplyr)
+library(tidyverse)
+
+iris %>%
+  dplyr::group_by(iris$Species) %>%
+  skim()
+
+
+```
+
+
+We see that from the information  
+* species with the longest Sepal Length is Virginica & the shortest Sepal Length is Setosa
+
+
+Now I want to see the rest of this information in box plots:
+
+* species with the longest & shortest Sepal Width
+* species with the longest & shortest Petal Length 
+* species with the longest & shortest Petal Width  
+
+
+```{r}
+irisVer <- subset(iris, Species == "versicolor")
+irisSet <- subset(iris, Species == "setosa")
+irisVir <- subset(iris, Species == "versicolor")
+
+
+par(mfrow=c(1,3),mar=c(6,3,2,1))
+boxplot(irisVer[,1:4], main="Versicolor", ylim = c(0,8),las=2)
+boxplot(irisSet[,1:4], main="Setosa", ylim = c(0,8),las=2)
+boxplot(irisVir[,1:4], main="Virginica", ylim = c(0,8),las=2)
+
+
+```
+
+
+We see that typically Setosa sepals & petals are shorter in length, the petal widths are shorter, and is typically longer in sepal width.
+
+
+Both Virginica & Versicolor shows a higher variation of sepal length & petal length 
+
+However, It is still difficult to distinguish the key characteristics between Virginica & Veriscolor
+
+
+```{r}
+par(mfrow=c(1,3))
+hist(irisVer$Petal.Length,breaks=seq(0,8,l=17),xlim=c(0,8),ylim=c(0,40))
+hist(irisVir$Petal.Length,breaks=seq(0,8,l=17),xlim=c(0,8),ylim=c(0,40))
+hist(irisSet$Petal.Length,breaks=seq(0,8,l=17),xlim=c(0,8),ylim=c(0,40))
+
+```
+We confirm again that the Setosa petals are smaller in length while Virginica & Veriscolor are more similar in petal length.
+
+Now we want to look at the correlation between the variables (sepal length, sepal width, petal length, petal width) 
+
+```{r}
+
+corr <- cor(iris[,1:4])
+round(corr,3)
+
+```
+
+
+petal width & petal length have high correlation
+sepal length and petal length have high correlation 
+
+To gain more insight we have to visualize the correlations. However, we want to view by Species so we use a color to differentiate between species 
+
+
+
+```{r}
+
+pairs(iris[,1:4], col=iris[,5],oma=c(4,4,6,12))
+par(xpd=TRUE)
+legend(0.85,0.6, as.vector(unique(iris$Species)),fill=c(1,2,3))
+```
+
+
+
+
+======================================================
+Revise
+* species with the shortest Sepal Width & sepal Length? - this would indicate smaller sepals
+* species with the longest Petal Length & Petal Width? - this would indicate biggest flower petals
+* species with the longest & shortest Petal Width & Sepal Width? 
+- Species with the widest petals & sepals
+* species with longest Sepal lengths & Petal Lengths
+=====================================================
+
+
+
+We start to see certain trends arise from the characteristics species. 
+
+So what features best separates the 3 species visually?
+The best features that shows distinct grouping between the three species are - petal length & petal width. We see from the data that the Setosa species have the smallest petals, the Virginica species have the biggest petals and, Versicolor fall somewhere in the middle but closer in size to Virginica. 
+
+
+Is there overlap between species in measurements?
+Yes, there is a slight overlap. Virginica & Versicolor have a small overlap in sepal length & width. This overlap can also be seen when looking at petal width vs. sepal width, & petal width vs. sepal length
+
+
+What is the correlation between sepal length and petal length? & Between petal width and petal length?
+A flower with a shorther petal length & a shorter sepal length may indicate the flower in the Setosa species. Also, a flower with a larger petal length & a larger sepal length will typically be the Virginica species. Flowers in the Versicolor species will fall somewhere in the middle between the other two species. A similar correlation can be seen with petal width vs sepal length - larger petal width & larger sepal lengths may be associated with the Virginica species where a shorter petal width and shorter sepal width may be grouped with the Setosa species. Again, the Versicolor species falls somewhere in the middle between the other two species, but may overlap slightly when compared to the Virginica species.  
+
+
+Which features are most strongly correlated overall?
+Overall, I think the features that are the most strongly correlated are petal length & petal width. 
+
+```{r correlation}
+cor_matrix <- cor(iris[,1:4])
+cor_matrix
+
+
+
+
+```
+Here, we apply the Pearson's correlation coefficient to find pairs that are the most strongly correlated. This is one test that confirms our suspicions that Petal Length and Petal Width have the highest correlation over all. With Petal length & Sepal Length being the next pair of characteristics with the 2nd highest correlation.
+
+```{r correlation significance}
+cor.test(iris$Petal.Length, iris$Petal.Width)
+install.packages("corrplot")
+library(corrplot)
+corrplot(cor_matrix, method="color", addCoef.col="black")
+
+```
+
+This visual makes it more clearer to see that petal width & petal length have the closest correlation. 
+
+
+```{r partial correlations}
+install.packages("ppcor")
+library(ppcor)
+pcor(iris[,1:4])
+
+```
+
+With the partial correlation test we see that again the Petal width and Petal length have the highest pcor statistic which gives us further evidence that the relationship between the two variables is robust. 
+
+
+Now I want to see what the relationship between the two variables look like in a scatterplot matrix.
+
+```{r}
+install.packages("ggplot2")
+library (ggplot2)
+ggplot(iris,aes(x=Petal.Length, y=Petal.Width, color=Species))+
+  geom_point(size=2)+
+  facet_wrap(~ Species)+
+  labs(title = "Petal Length vs Petal Width by Species")+
+  theme_minimal()
+
+```
+
+
+We can see that the Petal Length & Petal Width features show a clear distinct groupings between the three Species. 
+
+
+
+
+
+
